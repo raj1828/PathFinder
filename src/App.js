@@ -5,6 +5,7 @@ import Grid from './components/Grid';
 function App() {
 
        const [grid, setGrid] = useState([]);
+       const [mouseIsPressed, setMouseIsPressed] = useState(false);
        // useEffect hook to perform side effects, runs once after the initial render
        useEffect(() => {
               const initalGrid = createInitialGrid();
@@ -41,9 +42,47 @@ function App() {
               };
        };
 
+       // handel Mouse Down
+       const handelMouseDown = (row, col) => {
+              const newGrid = getNewGridWithWallToggled(grid, row, col);
+              setGrid(newGrid);
+              setMouseIsPressed(true);
+       }
+
+       const handelMouseEnter = (row, col) => {
+              if (!mouseIsPressed) return;
+              const newGrid = getNewGridWithWallToggled(grid, row, col);
+              setGrid(newGrid);
+       }
+
+       const handelMouseUp = () => {
+              setMouseIsPressed(false);
+       };
+
+       const getNewGridWithWallToggled = (grid, row, col) => {
+              if (!grid[row] || !grid[row][col]) {
+                     console.error(`Invalid grid position: (${row}, ${col})`);
+                     return grid;
+              }
+              const newGrid = grid.slice();
+              const node = newGrid[row][col];
+              const newNode = {
+                     ...node,
+                     isWall: !node.isWall,
+              }
+              newGrid[row][col] = newNode;
+              return newGrid;
+       }
+
        return (
               <div className="App">
-                     <Grid grid={grid} />
+                     <Grid
+                            grid={grid}
+                            mouseIsPressed={mouseIsPressed}
+                            onMouseDown={handelMouseDown}
+                            onMouseEnter={handelMouseEnter}
+                            onMouseUp={handelMouseUp}
+                     />
               </div>
        );
 }
