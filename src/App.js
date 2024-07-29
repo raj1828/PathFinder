@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import Grid from './components/Grid';
 import { dijkstra, getNodesInShortestPathOrder } from './algorithms/dijkstra';
+import ControlPanel from './components/ControlPanel';
 
 function App() {
 
@@ -86,7 +87,7 @@ function App() {
                      }
                      setTimeout(() => {
                             const node = visitedNodeInOrder[i];
-                            if (node) {
+                            if (!node.isStart && !node.isFinish) {
                                    document.getElementById(`node-${node.row}-${node.col}`).className = 'node node-visited';
                             } else {
                                    console.error('Node is undefined at index:', i);
@@ -117,10 +118,27 @@ function App() {
               animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
        };
 
+       // Control Pannel Functions
+       const resetGrid = () => {
+              const initialGrid = createInitialGrid();
+              setGrid(initialGrid);
+              // Reset all node classes
+              for (let row = 0; row < 20; row++) {
+                     for (let col = 0; col < 50; col++) {
+                            const node = document.getElementById(`node-${row}-${col}`);
+                            if (node) {
+                                   node.className = 'node';
+                            }
+                     }
+              }
+              // Reapply start and finish node classes
+              document.getElementById('node-10-5').className = 'node node-start';
+              document.getElementById('node-10-45').className = 'node node-finish';
+       }
 
        return (
               <div className="App">
-                     <button onClick={visualizeDijkstra}>Visualize Dijkstra's Algorithm</button>
+                     <ControlPanel onReset={resetGrid} onVisulize={visualizeDijkstra} />
                      <Grid
                             grid={grid}
                             mouseIsPressed={mouseIsPressed}
