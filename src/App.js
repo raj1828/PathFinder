@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import Grid from './components/Grid';
+import { dijkstra, getNodesInShortestPathOrder } from './algorithms/dijkstra';
 
 function App() {
 
@@ -74,8 +75,52 @@ function App() {
               return newGrid;
        }
 
+       // Dijkstra animation code and implementation
+       const animateDijkstra = (visitedNodeInOrder, nodesInShortestPathOrder) => {
+              for (let i = 0; i <= visitedNodeInOrder.length; i++) {
+                     if (i === visitedNodeInOrder.length) {
+                            setTimeout(() => {
+                                   animateShortestPath(nodesInShortestPathOrder);
+                            }, 10 * i);
+                            return;
+                     }
+                     setTimeout(() => {
+                            const node = visitedNodeInOrder[i];
+                            if (node) {
+                                   document.getElementById(`node-${node.row}-${node.col}`).className = 'node node-visited';
+                            } else {
+                                   console.error('Node is undefined at index:', i);
+                            }
+                     }, 10 * i);
+              }
+       };
+
+       const animateShortestPath = (nodesInShortestPathOrder) => {
+              for (let i = 0; i <= nodesInShortestPathOrder.length; i++) {
+                     setTimeout(() => {
+                            const node = nodesInShortestPathOrder[i];
+                            if (node) {
+                                   document.getElementById(`node-${node.row}-${node.col}`).className = 'node node-shortest-path';
+                            } else {
+                                   console.error('Node is undefined at index:', i);
+                            }
+                     }, 50 * i);
+              }
+       };
+
+       const visualizeDijkstra = () => {
+              const newGrid = [...grid];
+              const startNode = newGrid[10][5];
+              const finishNode = newGrid[10][45];
+              const visitedNodesInOrder = dijkstra(newGrid, startNode, finishNode);
+              const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
+              animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+       };
+
+
        return (
               <div className="App">
+                     <button onClick={visualizeDijkstra}>Visualize Dijkstra's Algorithm</button>
                      <Grid
                             grid={grid}
                             mouseIsPressed={mouseIsPressed}
