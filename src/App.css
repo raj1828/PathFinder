@@ -1,3 +1,75 @@
+/* Global styles */
 .App {
-       text-align: center;
-     }
+       display: flex;
+       flex-direction: column;
+       min-height: 100vh;
+   }
+   
+   main {
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       flex-grow: 1;
+       padding: 20px;
+   }
+   
+   /* Grid styles */
+   .grid {
+       display: inline-block;
+       border: 2px solid #333;
+       background-color: #fff;
+   }
+   
+   .row {
+       display: flex;
+   }
+   
+   .node {
+       width: 20px;
+       height: 20px;
+       border: 1px solid #ddd;
+       display: inline-block;
+       transition: background-color 0.3s ease;
+   }
+   
+   .node-start {
+       background-color: green;
+   }
+   
+   .node-finish {
+       background-color: red;
+   }
+   
+   .node-wall {
+       background-color: black;
+   }
+   
+   .node-visited {
+       background-color: #add8e6; /* light blue */
+       animation: visitedAnimation 0.3s ease;
+   }
+   
+   .node-shortest-path {
+       background-color: yellow;
+       animation: shortestPathAnimation 0.3s ease;
+   }
+   
+   /* Animations */
+   @keyframes visitedAnimation {
+       from {
+           background-color: white;
+       }
+       to {
+           background-color: #add8e6;
+       }
+   }
+   
+   @keyframes shortestPathAnimation {
+       from {
+           background-color: white;
+       }
+       to {
+           background-color: yellow;
+       }
+   }
+   

@@ -3,16 +3,24 @@ import './App.css';
 import Grid from './components/Grid';
 import { dijkstra, getNodesInShortestPathOrder } from './algorithms/dijkstra';
 import ControlPanel from './components/ControlPanel';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Utlity from './components/Utlity';
 
 function App() {
 
        const [grid, setGrid] = useState([]);
        const [mouseIsPressed, setMouseIsPressed] = useState(false);
+       const [isSettingStart, setIsSettingStart] = useState(false);
+       const [isSettingFinish, setIsSettingFinish] = useState(false);
+       const [startNode, setStartNode] = useState({ row: 10, col: 5 });
+       const [finishNode, setFinishNode] = useState({ row: 10, col: 45 });
+
        // useEffect hook to perform side effects, runs once after the initial render
        useEffect(() => {
               const initalGrid = createInitialGrid();
               setGrid(initalGrid);
-       }, []) // Empty dependency array means this effect runs only once
+       }, [startNode, finishNode]) // Empty dependency array means this effect runs only once
 
        // Function to create the initial grid
        const createInitialGrid = () => {
@@ -35,8 +43,8 @@ function App() {
               return {
                      col,
                      row,
-                     isStart: row === 10 && col === 5,  // Boolean indicating if this node is the start node
-                     isFinish: row === 10 && col === 45, // Boolean indicating if this node is the finish node
+                     isStart: row === startNode.row && col === startNode.col,  // Boolean indicating if this node is the start node
+                     isFinish: row === finishNode.row && col === finishNode.col, // Boolean indicating if this node is the finish node
                      distance: Infinity, // Distance value used in pathfinding algorithms
                      isVisited: false, // Boolean indicating if this node has been visited
                      isWall: false, //Boolean indicating if this node is a wall
@@ -46,8 +54,16 @@ function App() {
 
        // handel Mouse Down
        const handelMouseDown = (row, col) => {
-              const newGrid = getNewGridWithWallToggled(grid, row, col);
-              setGrid(newGrid);
+              if (isSettingStart) {
+                     setStartNode({ row, col });
+                     setIsSettingStart(false);
+              } else if (isSettingFinish) {
+                     setFinishNode({ row, col });
+                     setIsSettingFinish(false);
+              } else {
+                     const newGrid = getNewGridWithWallToggled(grid, row, col);
+                     setGrid(newGrid);
+              }
               setMouseIsPressed(true);
        }
 
@@ -111,10 +127,10 @@ function App() {
 
        const visualizeDijkstra = () => {
               const newGrid = [...grid];
-              const startNode = newGrid[10][5];
-              const finishNode = newGrid[10][45];
-              const visitedNodesInOrder = dijkstra(newGrid, startNode, finishNode);
-              const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
+              const start = newGrid[startNode.row][startNode.col];
+              const finish = newGrid[finishNode.row][finishNode.col];
+              const visitedNodesInOrder = dijkstra(newGrid, start, finish);
+              const nodesInShortestPathOrder = getNodesInShortestPathOrder(finish);
               animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
        };
 
@@ -132,20 +148,36 @@ function App() {
                      }
               }
               // Reapply start and finish node classes
-              document.getElementById('node-10-5').className = 'node node-start';
-              document.getElementById('node-10-45').className = 'node node-finish';
+              // document.getElementById('node-10-5').className = 'node node-start';
+              // document.getElementById('node-10-45').className = 'node node-finish';
        }
+
+       const handelSetStart = () => {
+              setIsSettingStart(true);
+       };
+       const handelSetFinish = () => {
+              setIsSettingFinish(true);
+       };
+       const handelSetWall = () => { };
 
        return (
               <div className="App">
-                     <ControlPanel onReset={resetGrid} onVisulize={visualizeDijkstra} />
-                     <Grid
-                            grid={grid}
-                            mouseIsPressed={mouseIsPressed}
-                            onMouseDown={handelMouseDown}
-                            onMouseEnter={handelMouseEnter}
-                            onMouseUp={handelMouseUp}
-                     />
+                     <Header onReset={resetGrid} onVisualize={visualizeDijkstra} />
+                     <main>
+                            <Utlity
+                                   onSetStart={handelSetStart}
+                                   onSetFinish={handelSetFinish}
+                                   onSetWall={handelSetWall}
+                            />
+                            <Grid
+                                   grid={grid}
+                                   mouseIsPressed={mouseIsPressed}
+                                   onMouseDown={handelMouseDown}
+                                   onMouseEnter={handelMouseEnter}
+                                   onMouseUp={handelMouseUp}
+                            />
+                     </main>
+                     <Footer />
               </div>
        );
 }

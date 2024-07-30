@@ -1,0 +1,11 @@
+.util-sidebar{
+       margin: 0 30px 0 0px;
+}
+.funtion-buttons{
+       display: flex;
+       flex-direction: column;
+}
+.funtion-buttons button{
+       margin: 20px 0;
+       padding: 10px;
+}
